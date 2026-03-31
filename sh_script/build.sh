@@ -98,6 +98,16 @@ build() {
 
         echo "Building spdm-rs in no std with spdm-ring,hashed-transcript-data,mut-auth,is_sync,fips feature..."
         echo_command cargo build --target ${TARGET_OPTION} --release --no-default-features --features="spdm-ring,hashed-transcript-data,mut-auth,is_sync,fips"
+
+        echo "Building spdmlib_crypto_aws_lc in no std..."
+        AWS_LC_SYS_NO_JITTER_ENTROPY=1 \
+        CFLAGS_x86_64_unknown_none="-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE" \
+        echo_command cargo build -p spdmlib_crypto_aws_lc --target ${TARGET_OPTION} --release --no-default-features
+
+        echo "Building spdmlib_crypto_aws_lc in no std with hashed-transcript-data feature..."
+        AWS_LC_SYS_NO_JITTER_ENTROPY=1 \
+        CFLAGS_x86_64_unknown_none="-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE" \
+        echo_command cargo build -p spdmlib_crypto_aws_lc --target ${TARGET_OPTION} --release --no-default-features --features="hashed-transcript-data"
     fi
 
     popd

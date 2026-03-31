@@ -18,6 +18,13 @@ if [ ! -f "aws-lc-sys/aws-lc/CMakeLists.txt" ]; then
     echo "Initializing aws-lc-sys/aws-lc submodule..."
     git submodule update --init --depth 1 aws-lc-sys/aws-lc
 fi
+# Shallow clone may miss some directories. Ensure s2n-bignum headers exist.
+if [ ! -f "aws-lc-sys/aws-lc/third_party/s2n-bignum/s2n-bignum-imported/include/_internal_s2n_bignum.h" ]; then
+    echo "Restoring s2n-bignum include directory..."
+    pushd aws-lc-sys/aws-lc > /dev/null
+    git checkout HEAD -- third_party/s2n-bignum/s2n-bignum-imported/include/
+    popd > /dev/null
+fi
 popd > /dev/null
 
 # Step 2: Fix symlinks on Windows
@@ -25,21 +32,17 @@ popd > /dev/null
 BUILDER_LINK="$AWS_LC_RS_DIR/aws-lc-sys/builder"
 BUILDER_TARGET="$AWS_LC_RS_DIR/builder"
 
-if [ -f "$BUILDER_LINK" ] && [ ! -d "$BUILDER_LINK" ]; then
+# The builder entry may be a regular file (git stores symlink targets as plain files
+# when core.symlinks is false, or after git checkout on Windows/WSL-on-NTFS), a broken
+# symlink, or missing entirely. In all cases we need a working link/junction to ../builder.
+if [ ! -d "$BUILDER_LINK" ]; then
     echo "Fixing aws-lc-sys/builder symlink..."
     rm -f "$BUILDER_LINK"
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
         # On Windows (Git Bash / MSYS2), use directory junction via cmd
         cmd //c "mklink /J \"$(cygpath -w "$BUILDER_LINK")\" \"$(cygpath -w "$BUILDER_TARGET")\""
     else
-        # On Linux/macOS, recreate as proper symlink
-        ln -s ../builder "$BUILDER_LINK"
-    fi
-elif [ ! -e "$BUILDER_LINK" ]; then
-    echo "Creating aws-lc-sys/builder link..."
-    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "$OSTYPE" == "win32" ]]; then
-        cmd //c "mklink /J \"$(cygpath -w "$BUILDER_LINK")\" \"$(cygpath -w "$BUILDER_TARGET")\""
-    else
+        # On Linux/macOS/WSL, recreate as proper symlink
         ln -s ../builder "$BUILDER_LINK"
     fi
 fi

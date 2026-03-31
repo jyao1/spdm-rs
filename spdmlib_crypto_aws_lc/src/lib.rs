@@ -4,6 +4,10 @@
 
 //! spdm-rs crypto backend using aws-lc-rs for PQC (ML-KEM, ML-DSA) support.
 
+#![no_std]
+
+extern crate alloc;
+
 pub mod kem_impl;
 pub mod pqc_asym_sign_impl;
 pub mod pqc_asym_verify_impl;

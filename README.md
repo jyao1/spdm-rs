@@ -111,6 +111,22 @@ Please make sure clang can be found in PATH.
 
 Please make sure perl can be found in PATH.
 
+5. Install [CMake](https://cmake.org/)
+
+Required by aws-lc-sys build system. Please make sure cmake can be found in PATH.
+
+6. Install [Go](https://go.dev/)
+
+Required by aws-lc-sys (BoringSSL/aws-lc uses Go for code generation). Please make sure go can be found in PATH.
+
+7. Install [Python3](https://www.python.org/)
+
+Required by the pre-build script (`fix_aws_lc_sys.py`). Please make sure python3 can be found in PATH.
+
+8. Add the `x86_64-unknown-none` Rust target (for `no_std` builds):
+```
+rustup target add x86_64-unknown-none
+```
 
 Unset env (CC and AR):
 ```
@@ -142,6 +158,41 @@ cargo build --target x86_64-unknown-none --release --no-default-features --featu
 ```
 pushd spdmlib
 cargo build --target x86_64-unknown-none --release --no-default-features --features="spdm-ring,is_sync"
+```
+
+### Build `no_std` spdm with aws-lc-rs (PQC support)
+
+The `spdmlib_crypto_aws_lc` crate can be built for `no_std` targets (e.g. bare-metal `x86_64-unknown-none`), enabling PQC algorithms (ML-DSA, ML-KEM) without the standard library.
+
+**Prerequisites:**
+
+1. Run the pre-build script to initialize submodules, apply patches, and fix generated bindings:
+```
+bash sh_script/pre-build.sh
+```
+
+2. Unset env (CC and AR) to avoid interfering with cross-compilation:
+```
+export CC=
+export AR=
+```
+
+3. Set the required environment variables:
+```
+export AR_x86_64_unknown_none=llvm-ar
+export CC_x86_64_unknown_none=clang
+export AWS_LC_SYS_NO_JITTER_ENTROPY=1
+export CFLAGS_x86_64_unknown_none="-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE"
+```
+
+**Build:**
+```
+cargo build -p spdmlib_crypto_aws_lc --target x86_64-unknown-none --release --no-default-features
+```
+
+**Build with hashed-transcript-data:**
+```
+cargo build -p spdmlib_crypto_aws_lc --target x86_64-unknown-none --release --no-default-features --features="hashed-transcript-data"
 ```
 
 ## Run Rust SPDM emulator
@@ -234,8 +285,6 @@ Both `spdm-ring` and `spdm-mbedtls` crypto backends support raw public key verif
 ### Run emulator with PQC algorithms (ML-DSA + ML-KEM)
 
 SPDM 1.4 introduces Post-Quantum Cryptography (PQC) support. spdm-rs supports ML-DSA for signature and ML-KEM for key exchange via the [aws-lc-rs](https://github.com/aws/aws-lc-rs) crypto backend.
-
-**Note:** PQC support with aws-lc-rs currently only works for std build. It does not work for no-std build.
 
 **Prerequisites:**
 

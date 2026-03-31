@@ -87,6 +87,8 @@ jobs:
           RUSTFLAGS: "-C instrument-coverage"
           CC_x86_64_unknown_none: clang
           AR_x86_64_unknown_none: llvm-ar
+          AWS_LC_SYS_NO_JITTER_ENTROPY: 1
+          CFLAGS_x86_64_unknown_none: "-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE"
           RUN_REQUESTER_FEATURES: "spdm-ring"
           RUN_RESPONDER_FEATURES: "spdm-ring"
         run: |
@@ -98,6 +100,8 @@ jobs:
           RUSTFLAGS: "-C instrument-coverage"
           CC_x86_64_unknown_none: clang
           AR_x86_64_unknown_none: llvm-ar
+          AWS_LC_SYS_NO_JITTER_ENTROPY: 1
+          CFLAGS_x86_64_unknown_none: "-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE"
           RUN_REQUESTER_FEATURES: "spdm-ring,hashed-transcript-data,async-executor"
           RUN_RESPONDER_FEATURES: "spdm-ring,hashed-transcript-data,async-executor"
         run: |
@@ -109,6 +113,8 @@ jobs:
           RUSTFLAGS: "-C instrument-coverage"
           CC_x86_64_unknown_none: clang
           AR_x86_64_unknown_none: llvm-ar
+          AWS_LC_SYS_NO_JITTER_ENTROPY: 1
+          CFLAGS_x86_64_unknown_none: "-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE"
           RUN_REQUESTER_FEATURES: "spdm-mbedtls,async-executor"
           RUN_RESPONDER_FEATURES: "spdm-mbedtls,async-executor"
         run: |
@@ -120,6 +126,8 @@ jobs:
           RUSTFLAGS: "-C instrument-coverage"
           CC_x86_64_unknown_none: clang
           AR_x86_64_unknown_none: llvm-ar
+          AWS_LC_SYS_NO_JITTER_ENTROPY: 1
+          CFLAGS_x86_64_unknown_none: "-isystem /usr/include/x86_64-linux-gnu -DOPENSSL_NO_THREADS_CORRUPT_MEMORY_AND_LEAK_SECRETS_IF_THREADED -D_GNU_SOURCE -DBORINGSSL_UNSAFE_DETERMINISTIC_MODE"
           RUN_REQUESTER_FEATURES: "spdm-mbedtls,hashed-transcript-data,async-executor"
           RUN_RESPONDER_FEATURES: "spdm-mbedtls,hashed-transcript-data,async-executor"
         run: |

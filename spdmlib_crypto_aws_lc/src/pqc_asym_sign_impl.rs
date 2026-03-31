@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0 or MIT
 
+use alloc::vec;
 use core::ffi::{c_int, c_uchar};
 use spdmlib::protocol::{SpdmPqcAsymAlgo, SpdmSignatureStruct, SPDM_MAX_ASYM_SIG_SIZE};
 

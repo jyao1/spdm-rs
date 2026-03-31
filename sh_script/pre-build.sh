@@ -36,7 +36,21 @@ patch-ring() {
 
 setup-aws-lc-rs() {
     # setup aws-lc-rs: init nested submodule and fix symlinks
+    # Note: run git checkout first, then fix symlinks, then apply patches.
+    # git checkout restores the builder symlink as a plain file on Windows/WSL.
+    pushd external/aws-lc-rs
+    git checkout -- .
+    popd
+
     bash external/patches/aws-lc-rs/setup-aws-lc-rs.sh
+
+    # apply the patch set for aws-lc-rs
+    pushd external/aws-lc-rs
+    git apply ../patches/aws-lc-rs/0001-Add-no_std-support-for-aws-lc-rs.patch
+    popd
+
+    # fix aws-lc-sys generated bindings for no_std (std:: -> core::)
+    python3 external/patches/aws-lc-rs/fix_aws_lc_sys.py
 }
 
 format-patch() {
