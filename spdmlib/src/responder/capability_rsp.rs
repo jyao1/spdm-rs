@@ -69,6 +69,36 @@ impl ResponderContext {
         if let Some(get_capabilities) = get_capabilities {
             debug!("!!! get_capabilities : {:02x?}\n", get_capabilities);
 
+            // Validate capability flags per SPDM spec DSP0274 Table 13
+            if !crate::protocol::validate_request_capability_flags(
+                get_capabilities.flags.bits(),
+            ) {
+                error!("!!! get_capabilities : invalid capability flags combination !!!\n");
+                self.write_spdm_error(SpdmErrorCode::SpdmErrorInvalidRequest, 0, writer);
+                return (
+                    Err(SPDM_STATUS_INVALID_MSG_FIELD),
+                    Some(writer.used_slice()),
+                );
+            }
+
+            // Validate size parameters (v1.2+)
+            if self.common.negotiate_info.spdm_version_sel >= SpdmVersion::SpdmVersion12
+                && !crate::protocol::validate_request_sizes(
+                    get_capabilities.data_transfer_size,
+                    get_capabilities.max_spdm_msg_size,
+                    get_capabilities
+                        .flags
+                        .contains(SpdmRequestCapabilityFlags::CHUNK_CAP),
+                )
+            {
+                error!("!!! get_capabilities : invalid size parameters !!!\n");
+                self.write_spdm_error(SpdmErrorCode::SpdmErrorInvalidRequest, 0, writer);
+                return (
+                    Err(SPDM_STATUS_INVALID_MSG_FIELD),
+                    Some(writer.used_slice()),
+                );
+            }
+
             #[cfg(feature = "mandatory-mut-auth")]
             if !get_capabilities
                 .flags

@@ -9,9 +9,11 @@ use core::convert::TryInto;
 
 mod algo;
 mod capability;
+pub mod capability_validation;
 mod version;
 pub use algo::*;
 pub use capability::*;
+pub use capability_validation::{validate_request_capability_flags, validate_request_sizes};
 pub use version::*;
 
 // util function

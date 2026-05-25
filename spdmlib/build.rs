@@ -254,4 +254,7 @@ fn main() {
         "cargo:rerun-if-changed={}/{}",
         SPDM_CONFIG_RS_OUT_DIR, SPDM_CONFIG_RS_OUT_FILE_NAME
     );
+
+    // Allow verus_keep_ghost cfg used by Verus formal verification annotations.
+    println!("cargo::rustc-check-cfg=cfg(verus_keep_ghost)");
 }

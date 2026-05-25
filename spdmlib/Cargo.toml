@@ -54,3 +54,7 @@ mandatory-mut-auth = ["mut-auth"]
 chunk-cap = []
 is_sync = ["maybe-async/is_sync"]
 fips = []
+
+[[test]]
+name = "kani_capability_proofs"
+path = "kani_proofs/capability_proofs.rs"
